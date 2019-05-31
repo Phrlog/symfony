@@ -155,9 +155,7 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
             $event = new ViewEvent($this, $request, $type, $response);
             $this->dispatcher->dispatch($event, KernelEvents::VIEW);
 
-            if ($event->hasResponse()) {
-                $response = $event->getResponse();
-            } else {
+            if (false === $event->hasResponse()) {
                 $msg = sprintf('The controller must return a "Symfony\Component\HttpFoundation\Response" object but it returned %s.', $this->varToString($response));
 
                 // the user may have forgotten to return something
@@ -167,6 +165,8 @@ class HttpKernel implements HttpKernelInterface, TerminableInterface
 
                 throw new ControllerDoesNotReturnResponseException($msg, $controller, __FILE__, __LINE__ - 17);
             }
+
+            $response = $event->getResponse();
         }
 
         return $this->filterResponse($response, $request, $type);
